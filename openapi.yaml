@@ -11,7 +11,7 @@ paths:
   /sale:
     post:
       tags:
-      - OKC-WS
+      - tpsweb
       operationId: register-sale
       summary: Register Sale
       description: |
@@ -140,7 +140,7 @@ paths:
   /discount:
     post:
       tags:
-      - OKC-WS
+      - tpsweb
       summary: Get Discount
       description: |
         Promotion questioned when payment is received on the ECR. Promotion interrogation "discount" is made by the web service function.
@@ -269,7 +269,7 @@ paths:
   /products:
     get:
       tags:
-      - OKC-WS
+      - tpsweb
       summary: ProductList
       description: |
         ECR can be loaded remotely via service products.
@@ -361,7 +361,7 @@ paths:
   /order:
     get:
       tags:
-      - OKC-WS
+      - tpsweb
       summary: Get Order
       description: |
         The integration enables customers to sell ECR sent from the ERP system. Posted operation "order" is done by web service.
@@ -466,7 +466,7 @@ paths:
 
     put:
       tags:
-      - OKC-WS
+      - tpsweb
       summary: Update order
       parameters:
         - name: okc_id
@@ -505,7 +505,7 @@ paths:
   /stock:
     get:
       tags:
-        - OKC-WS
+        - tpsweb
       summary: Stock Control
       description: |
         Some products on the ECR will inventory query and sales made. If allowed to be sold. If no sales permit, service function send to message(max 40 character) and showed on ECR screen.
