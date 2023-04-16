@@ -6,7 +6,7 @@ servers:
 - url: 'https://myshoperp.com/hugintps/'
   description: TPS Web service sample for Hugin tpsx
 tags:
-- name: tpsweb
+- name: OKC-WS
 paths:
   /sale:
     post:
