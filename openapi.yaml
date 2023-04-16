@@ -1,0 +1,781 @@
+openapi: 3.0.3
+info:
+  title: tpsweb
+  version: '1.0'
+servers:
+- url: 'https://myshoperp.com/hugintps/'
+  description: TPS Web service sample for Hugin tpsx
+tags:
+- name: tpsweb
+paths:
+  /sale:
+    post:
+      tags:
+      - OKC-WS
+      operationId: register-sale
+      summary: Register Sale
+      description: |
+        Used for receiving completed sales transaction from ECR-POS
+        
+        ECR from sales made in an instant "sale" web service function is transmitted over.
+
+        ECR from the sale starts. Details of the charged sales receipt is sent to the customer's web services by Hugin.
+
+        ECR from canceled sales are delivered to the web service. [Document->DocumentStatus](https://github.com/huginsdk/tps-v3/wiki/WS-Objects#document)
+      
+        Receipt information is sent to Sale function json format. Request from JSON content to be captured via Request Payload. Ex: .Net(C#) - string salesinfo=new StreamReader(strPost).ReadToEnd();
+
+        Function result must be [HTTP status code](https://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html). If operation success function send HttpStatusCode=200. If operation unsuccess function send different 200 OK.
+      parameters:
+      - name: okc_id
+        in: query
+        required: true
+        description: Device Fiscal Serial Id
+        schema:
+          type: string
+          example: FO00052563
+      - name: password
+        in: query
+        required: true
+        description: Device Password
+        schema:
+          type: string
+          example: FO00052563
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Sales'
+            example:
+              {
+              	"Document": {
+              		"OkcId": "FO00000198",
+              		"OkcPassword": "",
+              		"DocumentType": 1,
+              		"DocumentNo": 3,
+              		"DocumentDate": "2016-04-18T13:09:14",
+              		"ZNo": 39,
+              		"CashierNum": "6",
+              		"FooterNotes": [],
+              		"OrderCode": "",
+              		"TokenId": "",
+              		"CustomTags": [],
+                      "DocumentStatus": "0",
+              	},
+              	"SaleItems": [{
+              		"Quantity": 1.0,
+              		"Amount": 0.75,
+              		"PLUNo": 1,
+              		"DepartmentId": 2,
+              		"VatRate": 1.0,
+              		"Definition": "EKMEK",
+              		"Barcode": "250001",
+              		"ReferenceCode": "",
+              		"DiscountInfo": {
+              			"DiscountTotal": 0.0,
+              			"DiscountRate": 0,
+              			"DiscountNotes": []
+              		},
+              		"Weighable": "",
+              		"Price": 0.0,
+              		"SalesPerson": 0,
+              		"ItemNotes": [],
+              		"ProductSerialNum": "",
+              		"StockControl": 0,
+              		"CustomTags": []
+              	}],
+              	"PayItems": [{
+              		"Amount": 0.75,
+              		"PaymentType": 1,
+              		"InstallmentNo": 0,
+              		"CreditId": 0,
+              		"Definition": "",
+              		"ReferenceCode": "",
+              		"IssuerId": "",
+              		"CardNumber": "",
+              		"AcquireId": ""
+              	}],
+              	"SalesTotal": 0.75,
+              	"DiscountCode": "",
+              	"DiscountInfo": {
+              		"DiscountTotal": 0.0,
+              		"DiscountRate": 0,
+              		"DiscountNotes": []
+              	},
+              	"CustomerInfo": {
+              		"Name": "",
+              		"ID": ""
+              	},
+              	"SalesPerson": 0,
+              	"InvoiceNo": ""
+              }
+      responses:
+        200:
+          description: 'Success'
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  result:
+                    type: string
+        400:
+          description: BAD REQUEST
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  result:
+                    type: string
+        401:
+          description: UNAUTHORIZED
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  result:
+                    type: string
+  /discount:
+    post:
+      tags:
+      - OKC-WS
+      summary: Get Discount
+      description: |
+        Promotion questioned when payment is received on the ECR. Promotion interrogation "discount" is made by the web service function.
+
+        Sales promotion can be applied in two ways.
+        
+        Subtotal Discount : Sent subtotal discount will be applied.
+        Product Discount : Sale sent discount for every sale item.
+        Only one of the kind applied in a sales promotion. Both also applicable in the same line.
+        
+        If there is promotion "DiscountCode" field must contain the value.
+        
+        Function result must be [HTTP status code](https://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html). If operation success function send HttpStatusCode=200. If operation unsuccess function send different 200 OK.
+        
+      parameters:
+        - name: okc_id
+          in: query
+          required: true
+          description: Device Fiscal Serial Id
+          schema:
+            type: string
+        - name: password
+          in: query
+          required: true
+          description: Device password on ERP system which is provided to Hugin by customer
+          schema:
+            type: string
+      requestBody:
+        required: true
+        description: JSON data containing sales promotion discount information
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Sales'
+            example:
+              {
+              	"Document": {
+              		"OkcId": "FO00000198",
+              		"OkcPassword": "",
+              		"DocumentType": 1,
+              		"DocumentNo": 3,
+              		"DocumentDate": "2016-04-18T13:09:14",
+              		"ZNo": 39,
+              		"CashierNum": "6",
+              		"FooterNotes": [],
+              		"OrderCode": "",
+              		"TokenId": "",
+              		"CustomTags": [],
+                      "DocumentStatus": "0",
+              	},
+              	"SaleItems": [{
+              		"Quantity": 1.0,
+              		"Amount": 0.75,
+              		"PLUNo": 1,
+              		"DepartmentId": 2,
+              		"VatRate": 1.0,
+              		"Definition": "EKMEK",
+              		"Barcode": "250001",
+              		"ReferenceCode": "",
+              		"DiscountInfo": {
+              			"DiscountTotal": 0.0,
+              			"DiscountRate": 0,
+              			"DiscountNotes": []
+              		},
+              		"Weighable": "",
+              		"Price": 0.0,
+              		"SalesPerson": 0,
+              		"ItemNotes": [],
+              		"ProductSerialNum": "",
+              		"StockControl": 0,
+              		"CustomTags": []
+              	}],
+              	"PayItems": [{
+              		"Amount": 0.75,
+              		"PaymentType": 1,
+              		"InstallmentNo": 0,
+              		"CreditId": 0,
+              		"Definition": "",
+              		"ReferenceCode": "",
+              		"IssuerId": "",
+              		"CardNumber": "",
+              		"AcquireId": ""
+              	}],
+              	"SalesTotal": 0.75,
+              	"DiscountCode": "",
+              	"DiscountInfo": {
+              		"DiscountTotal": 0.0,
+              		"DiscountRate": 0,
+              		"DiscountNotes": []
+              	},
+              	"CustomerInfo": {
+              		"Name": "",
+              		"ID": ""
+              	},
+              	"SalesPerson": 0,
+              	"InvoiceNo": ""
+              }
+      responses:
+        200:
+          description: 'Success'
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  result:
+                    type: string
+        400:
+          description: BAD REQUEST
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  result:
+                    type: string
+        401:
+          description: UNAUTHORIZED
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  result:
+                    type: string
+  /products:
+    get:
+      tags:
+      - OKC-WS
+      summary: ProductList
+      description: |
+        ECR can be loaded remotely via service products.
+
+        Product list must be sent in a specific format.
+        
+        Pluno field in the product list should be sent sequentially from small to large.
+        
+        The end of each product on the list '##' should be put in brackets the characters.
+        
+        ECR is sent last updated. Web service should be sent by this date to create a product list.
+        
+        Function result must be [HTTP status kodu](https://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html). If operation success function send HttpStatusCode=200. If operation unsuccess function send different 200 OK.
+        
+        You can ignore creating a list in the following format if you do not use the last 5 feature. You must use either fill out and submit all values.
+        
+        You can check the list of items you are sending by [examining samples](https://github.com/huginsdk/tps/wiki/%5B1%5D-WS-Products#sample-product-lists) shared.
+        
+        Product List Format
+        
+        | Length | Description                                             |
+        | ------ | ------------------------------------------------------- |
+        | 1      | Flag (1 if used, 0 if not used) – all active products should start with 1 |
+        | 6      | Plu number (leftpad with 0)                              |
+        | 20     | Barcode(right pad with spaces)                           |
+        | 20     | Product name (right pad with spaces)                     |
+        | 9      | Unit price in cents (left pad with 0)                    |
+        | 2      | Department code (01-08)                                  |
+        | 4      | Unit (complete with spaces on the right)                 |
+        | 1      | E - weighted                                             |
+        |        | H - Not weighted                                         |
+        |        | P - Default price can be overriden by cashier            |
+        |        | S - Used for selling products with serial number tracking requirement |
+        | 6      | Category ID(left pad with 0's) note -  future use purpose only |
+        | 10     | Second unit price (left pad with 0's) future use purpose only |
+        | 1      | Stock Control Flag(0-1)                                  |
+        | 2      | Reference Code (Owner Code)                              |
+        | 2      | Carrige return + line feed                               |
+
+      parameters:
+        - name: okc_id
+          in: query
+          description: Device Fiscal Serial Id
+          required: true
+          schema:
+            type: string
+        - name: password
+          in: query
+          description: Device password on ERP system which is provided to Hugin by customer
+          required: true
+          schema:
+            type: string
+        - name: last_update_date
+          in: query
+          description: Last update date of the product database on ECR-POS
+          required: false
+          schema:
+            type: string
+            format: date-time
+      responses:
+        '200':
+          description: Success
+          content:
+            text/plain:
+              schema:
+                type: string
+              examples:
+                default:
+                  value: |
+                    100000100000001234567890123BESLER ACIK SOSIS     00010000001KG  E##\r\n
+                    100000200000001234567890123MARLBORO UZUN SIGARA  00020000002KG  H##\r\n
+                    100000300000001234567890123POLONEZ DANA ACIK SO  00030000003ADETS##\r\n
+                    100000400000001234567890123MARET 5LI SOSIS       00040000004ADETH##\r\n
+                    100000500000001234567890123MARET 10LU SOSIS      00050000005KUTUE##\r\n
+                    100000600000001234567890123BESLER VAK.SOSIS      00060000006KOLİH##\r\n
+        '404':
+          description: Not Found
+          content:
+            text/plain:
+              schema:
+                type: string
+        '401':
+          description: Unauthorized
+          content:
+            text/plain:
+              schema:
+                type: string
+  
+  /order:
+    get:
+      tags:
+      - OKC-WS
+      summary: Get Order
+      description: |
+        The integration enables customers to sell ECR sent from the ERP system. Posted operation "order" is done by web service.
+
+        Orders must be identical to the content of ECR from the sales json format. Payment orders were sent. Likewise, the payment of ECR(cashier) sent in left order.
+        
+        If the cash register enter order_id, function sends the order specified. If the orders taken in auto mode, order_id sent empty and web service sends the order to the next.
+        
+        If order list parameter active and order taken in auto mode, web service sends order list json. If operation success function send HttpStatusCode=206.
+        
+        Web service in order to send. If there is error([Order Error Codes](https://github.com/huginsdk/tps/wiki/%5B3%5D-WS-Order#error-codes-reference)) in order, ECR send to information use order [{PUT} method](https://github.com/huginsdk/tps/wiki/%5B3%5D-WS-Order#order-put)
+        
+        Function result must be [HTTP status code](https://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html). If operation success function send HttpStatusCode=200. If operation unsuccess function send different 200 OK.
+      parameters:
+        - name: okc_id
+          in: query
+          required: true
+          schema:
+            type: string
+          description: Device Fiscal Serial Id
+        - name: password
+          in: query
+          required: true
+          schema:
+            type: string
+          description: Device password on ERP system which is provided to Hugin by customer
+        - name: order_id
+          in: query
+          schema:
+            type: string
+          description: It is entered on ECR-POS
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Sales'
+              example:
+                {
+                	"Document": {
+                		"OkcId": "FO00000198",
+                		"OkcPassword": "",
+                		"DocumentType": 1,
+                		"DocumentNo": 3,
+                		"DocumentDate": "2016-04-18T13:09:14",
+                		"ZNo": 39,
+                		"CashierNum": "6",
+                		"FooterNotes": [],
+                		"OrderCode": "",
+                		"TokenId": "",
+                		"CustomTags": [],
+                        "DocumentStatus": "0",
+                	},
+                	"SaleItems": [{
+                		"Quantity": 1.0,
+                		"Amount": 0.75,
+                		"PLUNo": 1,
+                		"DepartmentId": 2,
+                		"VatRate": 1.0,
+                		"Definition": "EKMEK",
+                		"Barcode": "250001",
+                		"ReferenceCode": "",
+                		"DiscountInfo": {
+                			"DiscountTotal": 0.0,
+                			"DiscountRate": 0,
+                			"DiscountNotes": []
+                		},
+                		"Weighable": "",
+                		"Price": 0.0,
+                		"SalesPerson": 0,
+                		"ItemNotes": [],
+                		"ProductSerialNum": "",
+                		"StockControl": 0,
+                		"CustomTags": []
+                	}],
+                	"PayItems": [{
+                		"Amount": 0.75,
+                		"PaymentType": 1,
+                		"InstallmentNo": 0,
+                		"CreditId": 0,
+                		"Definition": "",
+                		"ReferenceCode": "",
+                		"IssuerId": "",
+                		"CardNumber": "",
+                		"AcquireId": ""
+                	}],
+                	"SalesTotal": 0.75,
+                	"DiscountCode": "",
+                	"DiscountInfo": {
+                		"DiscountTotal": 0.0,
+                		"DiscountRate": 0,
+                		"DiscountNotes": []
+                	},
+                	"CustomerInfo": {
+                		"Name": "",
+                		"ID": ""
+                	},
+                	"SalesPerson": 0,
+                	"InvoiceNo": ""
+                }
+
+    put:
+      tags:
+      - OKC-WS
+      summary: Update order
+      parameters:
+        - name: okc_id
+          in: query
+          required: true
+          schema:
+            type: string
+          description: Device Fiscal Serial Id
+        - name: password
+          in: query
+          required: true
+          schema:
+            type: string
+          description: Device Password
+        - name: order_id
+          in: query
+          required: true
+          schema:
+            type: string
+          description: Order that had an error at ECR-POS
+        - name: error_code
+          in: query
+          required: true
+          schema:
+            type: string
+          description: Error code
+        - name: error_desc
+          in: query
+          required: true
+          schema:
+            type: string
+          description: Error description
+      responses:
+        '200':
+          description: Success
+  /stock:
+    get:
+      tags:
+        - OKC-WS
+      summary: Stock Control
+      description: |
+        Some products on the ECR will inventory query and sales made. If allowed to be sold. If no sales permit, service function send to message(max 40 character) and showed on ECR screen.
+
+          If the query made by barcode, barcode field must fill, serial field must empty.
+          
+          If the query made by serial, serial field must fill, barcode field must empty.
+          
+          Function result must be [HTTP status code](https://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html). If operation success function send HttpStatusCode=200. If operation unsuccess function send different 200 OK.
+      parameters:
+        - name: okc_id
+          in: query
+          description: Device Fiscal Serial Id
+          required: true
+          schema:
+            type: string
+        - name: password
+          in: query
+          description: Device password on ERP system which is provided to Hugin by customer
+          required: true
+          schema:
+            type: string
+        - name: barcode
+          in: query
+          description: Product Barcode Number
+          schema:
+            type: string
+        - name: serial
+          in: query
+          description: Product Serial Number
+          schema:
+            type: string
+        - name: pluno
+          in: query
+          description: Product id in ECRPOS db
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Query successful
+
+components:
+  schemas:
+    Sales:
+      type: object
+      properties:
+        Document:
+          type: object
+          properties:
+            OkcId:
+              type: string
+              description: ECR-POS Fiscal ID
+            OkcPassword:
+              type: string
+              description: ECR-POS authorization code for web service
+            DocumentType:
+              type: integer
+              description: |
+                | Field name      | Value | Type |
+                |-----------------|-------|------|
+                | Receipt         | 1     | int  |
+                | Invoice         | 2     | int  |
+                | EInvoice        | 3     | int  |
+                | EArchive        | 4     | int  |
+                | Food            | 5     | int  |
+                | Parking         | 6     | int  |
+                | Prepayment      | 7     | int  |
+                | InvoicePayment  | 8     | int  |
+                | CurrentAccount  | 9     | int  |
+
+            DocumentNo:
+              type: integer
+              description: Receipt number
+            DocumentDate:
+              type: string
+              description: Document start date
+            ZNo:
+              type: integer
+              description: Z number
+            CashierNum:
+              type: string
+              description: Cashier (Clerck) Id
+            FooterNotes:
+              type: array
+              items:
+                type: string
+              description: Footer notes of document
+            OrderCode:
+              type: string
+              description: OrderId
+            TokenId:
+              type: string
+              description: Id for start GetOrder
+            CustomTags:
+              type: array
+              items:
+                type: object
+                properties:
+                  type:
+                    type: integer
+                    description: Custom value type
+                  value:
+                    type: string
+                    description: More information value
+                description: |
+                  Used to add extra attributes to sales document
+            DocumentStatus:
+              type: string
+              description: 'Success/Void of document : 0:Success / 1:Void'
+        SaleItems:
+          type: array
+          items:
+            type: object
+            properties:
+              Quantity:
+                type: number
+                description: Item's quantity
+              Amount:
+                type: number
+                description: The total amount of item
+              PLUNo:
+                type: integer
+                description: Product id in ECRPOS db
+              DepartmentId:
+                type: integer
+                description: Department (category) Id
+              VatRate:
+                type: number
+                description: VAT rate
+              Definition:
+                type: string
+                description: The name of item
+              Barcode:
+                type: string
+                description: Barcode number
+              ReferenceCode:
+                type: string
+                description: Reference code of Item
+              DiscountInfo:
+                type: object
+                description: |
+                  Discount information of Item
+                properties:
+                  DiscountTotal:
+                    type: number
+                    description: Discount total value
+                  DiscountRate:
+                    type: integer
+                    description: Discount rate value
+                  DiscountNotes:
+                    description: Discount notes
+                    type: array
+                    items:
+                      type: string
+              Weighable:
+                type: string
+                description: Weighable Code
+              Price:
+                type: number
+                description: Price of product
+              SalesPerson:
+                type: integer
+                description: Sales person id of Item
+              ItemNotes:
+                type: array
+                description: Notes of item
+                items:
+                  type: string
+              ProductSerialNum:
+                description: Serial number of product / Second Barcode Number
+                type: string
+              StockControl:
+                description: StockControl for product
+                type: integer
+              CustomTags:
+                description: Custom Tags
+                type: array
+                items:
+                  type: string
+        PayItems:
+          type: array
+          description: PaymentItems
+          items:
+            type: object
+            properties:
+              Amount:
+                description: The amount of payment
+                type: number
+              PaymentType:
+                description: Payment type
+                type: integer
+              InstallmentNo:
+                description: Installment count of payment(eft-pos)
+                type: integer
+              CreditId:
+                description: ECRPOS payment button number(0 for Check / Currency(foreign cash) transactions, 1-3 for buttons on device)
+                type: integer
+              Definition:
+                description: Name of payment type
+                type: string
+              ReferenceCode:
+                description: Id of Bank Operation
+                type: string
+              IssuerId:
+                description: Issuer Id of bank. Please [see](https://github.com/huginsdk/tps/wiki/WS-Objects#bank-name-and-codes).
+                type: string
+              CardNumber:
+                description: Masked number of credit card
+                type: string
+              AcquireId:
+                description: Application(bank) short name
+                type: string
+              PaymentSubType:
+                description: |
+                  Name of payment sub type
+                  | Field Name | Value                   |
+                  |------------|-------------------------|
+                  | 1          | SALE                    |
+                  | 3          | MATURITY_DIFFIRENCE     |
+                  | 4          | INSTALLMENT             |
+                  | 5          | CC_DEBT                 |
+                  | 10         | NEW_DOCUMENT            |
+                  | 12         | CASHBACK                |
+                  | 13         | CREDIT                  |
+                  | 14         | POINT_SEARCH            |
+                  | 16         | POINT_USE               |
+                  | 20         | E_RETURN                |
+                  | 22         | PARTIAL_RETURN          |
+                  | 29         | PREPAID_CASH_INSTALL    |
+                  | 30         | PREPAID_CARD_INSTALL    |
+                type: integer
+        SalesTotal:
+          description: SalesTotal for document
+          type: number
+        DiscountCode:
+          description: Content of discount code
+          type: string
+        DiscountInfo:
+          type: object
+          description: Discount information for document
+          properties:
+            DiscountTotal:
+              description: Discount total value
+              type: number
+            DiscountRate:
+              description: Discount rate value
+              type: integer
+            DiscountNotes:
+              description: Discount notes
+              type: array
+              items:
+                type: string
+        CustomerInfo:
+          type: object
+          description: Customer informatıon
+          properties:
+            Name:
+              description: Customer name
+              type: string
+            ID:
+              description: Customer key(Customer phone Number)
+              type: string
+        SalesPerson:
+          description: Sales person Id for document
+          type: integer
+        InvoiceNo:
+          description: Invoice number
+          type: string
+    
+      
+      
+    
+ 
