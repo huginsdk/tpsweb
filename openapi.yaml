@@ -4,7 +4,7 @@ info:
   version: '1.0'
 servers:
 - url: 'https://myshoperp.com/hugintps/'
-  description: TPS Web service sample for Hugin tpsx
+  description: TPS Web service sample for Hugin tpsx.
 tags:
 - name: OKC-WS
 paths:
